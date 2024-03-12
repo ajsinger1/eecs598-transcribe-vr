@@ -1,0 +1,11 @@
+https://npm.developer.oculus.com/
+
+• Meta XR Core SDK (https://developer.oculus.com/downloads/package/meta-xr-core-sdk)
+• Meta XR Audio SDK (https://developer.oculus.com/downloads/package/meta-xr-audio-sdk)
+• Meta XR Haptics SDK (https://developer.oculus.com/documentation/unity/unity-haptics-sdk)
+• Meta XR Interaction SDK (https://developer.oculus.com/downloads/package/meta-xr-interaction-sdk)
+• Meta XR Interaction SDK OVR Integration (https://developer.oculus.com/downloads/package/meta-xr-interaction-sdk-ovr-integration/)
+• Meta XR Platform SDK (https://developer.oculus.com/downloads/package/meta-xr-platform-sdk/)
+• Meta XR Voice (https://developer.oculus.com/downloads/package/meta-voice-sdk), Composer (https://developer.oculus.com/downloads/package/meta-voice-sdk-composer/), Dictation (https://developer.oculus.com/downloads/package/meta-voice-sdk-dictation/), and Telemetry  (https://developer.oculus.com/downloads/package/meta-voice-sdk-telemetry/)SDK
+• Meta XR Simulator (https://developer.oculus.com/downloads/package/meta-xr-simulator)
+• Meta Mixed Reality Utility Kit (https://developer.oculus.com/downloads/package/meta-xr-mr-utility-kit-upm)
