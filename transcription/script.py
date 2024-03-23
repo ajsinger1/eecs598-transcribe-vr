@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sounddevice as sd
 import numpy as np
 import librosa
@@ -5,9 +6,11 @@ from pydub import AudioSegment
 from io import BytesIO
 import soundfile as sf
 from openai import OpenAI
+from pathlib import Path
 
 
-
+var_dir = Path("var/")
+var_dir.mkdir(exist_ok=True)
 def record_audio(duration=10, samplerate=44100):
     """Record audio from the microphone."""
     print("Recording...")
@@ -32,26 +35,26 @@ average_volume = np.mean(db)
 print("Average volume:", average_volume)
 
 # Save the recorded audio to a WAV file
-sf.write('recorded_audio.wav', mono_audio, 44100)
+record_audio_path = var_dir/'recorded_audio.wav'
+sf.write(record_audio_path, mono_audio, 44100)
 
 # Load the audio file with pydub
-audio_segment = AudioSegment.from_file('recorded_audio.wav', format="wav")
+audio_segment = AudioSegment.from_file(record_audio_path, format="wav")
 
 # Example: Cut the first 3000 milliseconds (3 seconds) of audio
-cut_audio = audio_segment[:3000]
+# cut_audio = audio_segment[:3000]
 
 # If you need to save the cut audio
-cut_audio.export("cut_audio.wav", format="wav")
+# cut_audio.export("cut_audio.wav", format="wav")
 
 # Add API key
 key = ""
 
 client = OpenAI(api_key=key)
 
-audio_file= open("recorded_audio.wav", "rb")
+audio_file= open(record_audio_path, "rb")
 transcription = client.audio.transcriptions.create(
   model="whisper-1", 
   file=audio_file,
-
 )
 print(transcription.text)
