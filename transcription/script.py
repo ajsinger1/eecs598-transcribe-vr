@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import time
 from io import BytesIO
 from pathlib import Path
 
@@ -59,8 +60,12 @@ audio_segment = AudioSegment.from_file(record_audio_path, format="wav")
 client = OpenAI()
 
 audio_file= open(record_audio_path, "rb")
+s = time.perf_counter()
 transcription = client.audio.transcriptions.create(
   model="whisper-1", 
   file=audio_file,
 )
+e = time.perf_counter()
+
 print(transcription.text)
+print(f"OpenAI API call: {e-s}s")
