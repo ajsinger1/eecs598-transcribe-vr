@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
-import sounddevice as sd
-import numpy as np
-import librosa
-from pydub import AudioSegment
+import os
 from io import BytesIO
-import soundfile as sf
-from openai import OpenAI
 from pathlib import Path
 
+import librosa
+import numpy as np
+import sounddevice as sd
+import soundfile as sf
+from dotenv import load_dotenv
+from openai import OpenAI
+from pydub import AudioSegment
 
+# Get OpenAI key
+load_dotenv()
+if 'OPENAI_API_KEY' not in os.environ:
+    raise RuntimeError("OPENAI_API_KEY is not set. Please add it to a .env file or export it to your shell.")
+
+# Setup var path
 var_dir = Path("var/")
 var_dir.mkdir(exist_ok=True)
+
 def record_audio(duration=10, samplerate=44100):
     """Record audio from the microphone."""
     print("Recording...")
@@ -47,10 +56,7 @@ audio_segment = AudioSegment.from_file(record_audio_path, format="wav")
 # If you need to save the cut audio
 # cut_audio.export("cut_audio.wav", format="wav")
 
-# Add API key
-key = ""
-
-client = OpenAI(api_key=key)
+client = OpenAI()
 
 audio_file= open(record_audio_path, "rb")
 transcription = client.audio.transcriptions.create(
