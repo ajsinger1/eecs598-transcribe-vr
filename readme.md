@@ -21,3 +21,14 @@ cd transcription
 source env/bin/activate # activate the python environment
 ./script.py
 ```
+
+regonition uses lip movement detector
+recog only uses MAR
+Neither really work that well
+```zsh
+cd recognition
+source env/bin/activate # activate the python environment
+python3 recognition.py
+or
+python3 recog.py
+```
