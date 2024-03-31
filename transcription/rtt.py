@@ -25,7 +25,7 @@ parser.add_argument("--record_timeout", default=2,
 parser.add_argument("--phrase_timeout", default=3,
                     help="How much empty space between recordings before we "
                             "consider it a new line in the transcription.", type=float)
-parser.add_argument("--pause_timeout", default=0.2,
+parser.add_argument("--pause_timeout", default=0.5,
                     help="How much silence before a chunk of audio is transcribed "
                             "consider it a new line in the transcription.", type=float)
 if 'linux' in platform:
@@ -148,7 +148,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                     self.request.sendall(b'<FLUSH>')
                     for words in transcription:
                         phrase = ' '.join(words)
-                        self.request.sendall(bytes(phrase + ' ', 'utf-8'))
+                        self.request.sendall(bytes(phrase + '\n', 'utf-8'))
                         print(phrase)
                     # Flush stdout.
                     print('', end='', flush=True)
@@ -160,7 +160,7 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 raise KeyboardInterrupt() from exc
 
 if __name__ == "__main__":
-    HOST, PORT = "localhost", 9999
+    HOST, PORT = "127.0.0.1", 9003
 
     # Create the server, binding to localhost on port 9999
     with socketserver.TCPServer((HOST, PORT), MyTCPHandler) as server:

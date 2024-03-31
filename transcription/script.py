@@ -21,7 +21,7 @@ if 'OPENAI_API_KEY' not in os.environ:
 var_dir = Path("var/")
 var_dir.mkdir(exist_ok=True)
 
-def record_audio(duration=10, samplerate=44100):
+def record_audio(duration=20, samplerate=44100):
     """Record audio from the microphone."""
     print("Recording...")
     # Adjust the `channels` parameter to 1 since the MacBook Pro Microphone supports only 1 input channel
