@@ -22,17 +22,17 @@ def parse_args():
     """Parse Arguments"""
     parser = argparse.ArgumentParser()
     # Logging args
-    parser.add_argument("--log-level", default="WARNING", help="Set log level.", type=str)
+    parser.add_argument("--log-level", default="WARNING", help="Set log level. (default is WARNING)", type=str)
     # Networking Related Args
     parser.add_argument(
         "-a",
         "--address",
         default="127.0.0.1",
-        help="Host address to connect to.",
+        help="Host address to connect to. (default is 127.0.0.1)",
         type=str,
     )
     parser.add_argument(
-        "-p", "--port", default=9000, help="Port to connect to.", type=int
+        "-p", "--port", default=9000, help="Port to connect to. (default is 9000)", type=int
     )
 
     # Transcription Related Args
