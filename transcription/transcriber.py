@@ -111,14 +111,11 @@ class Transcriber:
                         )
                         end = datetime.now()
                         logger.debug("OpenAI call latency: %s", str(end - start))
-
-                        # If we detected a pause between recordings, add a new item to our transcription.
-                        # Otherwise edit the existing one.
-                        if phrase_complete:
-                            self.transcription_queue.put(b"<PHRASE>")
-                            print("<PHRASE>")
-                        self.transcription_queue.put(b"<FLUSH>" + transcription_chunk.text.encode())
-                        print("<FLUSH>" + transcription_chunk.text)
+                        phrase = transcription_chunk.text
+                        payload = b"<P><" if phrase_complete else b"<"
+                        payload += str(len(phrase)).encode() + b">" + phrase.encode()
+                        self.transcription_queue.put(payload)
+                        print(payload.decode())
                 else:
                     # Infinite loops are bad for processors, must sleep.
                     sleep(0.25)
