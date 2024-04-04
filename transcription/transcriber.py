@@ -142,6 +142,7 @@ class Transcriber:
 
     def _get_microphone(self, mic_name: str) -> sr.Microphone:
         """Sets up and returns microphone object to be used by the recorder"""
+        print(f"MICROPHONE NAME: {mic_name}")
         if mic_name == "list":
             print("Available microphone devices are: ")
             for index, name in enumerate(sr.Microphone.list_microphone_names()):
