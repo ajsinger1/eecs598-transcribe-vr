@@ -1,0 +1,17 @@
+TRANSCRIPTION COMMUNICATION PROTOCOL
+<P> -- means that the last phrase has ended (i.e. a new phrase of text will begin now) -- one phrase is a transcription of someone talking without pause. In between these tags, each "line" sent is the newest update to the current phrase transcription
+
+<INTEGER> -- the length of the phrase string within the payload that is sent
+
+Example:
+"Hi my name is Ari and I'm 23 years old. [PAUSE] Right now I'm working with Joey on figuring out how to set up a server listener thingy on Hololens."
+
+<P><13>Hi my name is...
+
+<18>Hi my name is Ari.
+
+<39>Hi my name is Ari and I'm 23 years old.
+
+<P><12>Right now...
+
+Etc.
