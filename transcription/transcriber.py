@@ -32,8 +32,8 @@ class TranscriberArgs(BaseModel):
         default=0.5,
         description="How much silence before a chunk of audio is transcribed consider it a new line in the transcription.",
     )
-    microphone: Optional[str] = Field(
-        default="pulse" if "linux" in sys.platform else None,
+    microphone: str = Field(
+        default="pulse" if "linux" in sys.platform else "None",
         description="Microphone name for SpeechRecognition. Run this with 'list' to view available Microphones.",
     )
 
@@ -148,7 +148,7 @@ class Transcriber:
             for index, name in enumerate(sr.Microphone.list_microphone_names()):
                 print(f'Microphone with name "{name}" found')
             sys.exit(0)
-        if mic_name is not None:
+        if mic_name != "None":
             for index, name in enumerate(sr.Microphone.list_microphone_names()):
                 if mic_name in name:
                     return sr.Microphone(sample_rate=16000, device_index=index)
