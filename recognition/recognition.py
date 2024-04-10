@@ -8,7 +8,7 @@ face_detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # Initialize the video capture
-video_capture = cv2.VideoCapture(1)
+video_capture = cv2.VideoCapture(0)
 
 # Initialize the lip movement detector
 lip_detector = LipMovementDetector(dynamic_threshold_factor=1, num_frames_to_analyze=3)

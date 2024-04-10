@@ -7,7 +7,7 @@ face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_fro
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # start video capture
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(1)
 
 # draw bounding boxes around detected faces
 def detect_bounding_box(vid):
@@ -39,7 +39,7 @@ def detect_lips_speaking(video_frame, faces):
         
         mar = mouth_aspect_ratio(lip_points)
         
-        if prev_mar is not None and abs(mar - prev_mar) > 0.5:  # Threshold for detecting speaking
+        if prev_mar is not None and abs(mar - prev_mar) > 0.1:  # Threshold for detecting speaking
             cv2.polylines(video_frame, [lip_points[0:12]], isClosed=True, color=(0, 0, 255), thickness=2)
         
         prev_mar = mar
