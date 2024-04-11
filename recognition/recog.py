@@ -1,13 +1,63 @@
 import numpy as np
 import dlib
 import cv2
+from collections import deque, List
+
+
+class Face:
+    class Coordinates:
+        def __init__(self, coordinates):
+            (self.x, self.y, self.w, self.h) = coordinates
+            self.coordinates = coordinates
+    
+    def __init__(self, coordinates):
+        # New face
+        self.faceCoordinates = self.Coordinates(coordinates)
+        self.prev_mar = None
+        self.diffs = deque(0, 0, 0, 0, 0)
+        self.talk_score = 0
+
+    def update_face(self, coordinates):
+        self.face = Face(coordinates)
+    
+    def push_mar(self, mar):
+        if not self.prev_mar:
+            self.prev_mar = mar
+            return
+        self.talk_score -= self.diffs.popleft()
+        current_diff = abs(mar - self.prev_mar)
+        self.talk_score += current_diff
+        self.diffs.push(current_diff)
+        self.prev_mar = mar
+
+
+class FaceCollection:
+    def __init__(self):
+        self.faces: List[Face] = []
+
+    
+    def update_faces(faces: List[Face]):
+        # do the graph thingy, associate each face in the input with a face in the FaceInfo, and call update face on associated, delete faceInfos which are not associated with any of the faces
+        pass
+
+    # more functions to make this iterable
+
+face_collection = FaceCollection()
+
+
+
+# everything below is old 
+# everything above is new method
+
+
+
 
 # initialize the face classifier and the facial landmarks predictor
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # start video capture
-video_capture = cv2.VideoCapture(1)
+video_capture = cv2.VideoCapture(0)
 
 # draw bounding boxes around detected faces
 def detect_bounding_box(vid):
@@ -27,10 +77,12 @@ def mouth_aspect_ratio(mouth_points):
 
 # global variables for tracking mouth movement
 prev_mar = None
+most_recent_talker = (0,0,0,0)
 
 # detect lip movement and highlight speaking
 def detect_lips_speaking(video_frame, faces):
-    global prev_mar
+    global prev_mar, most_recent_talker
+    lips_moving = []
     for (x, y, w, h) in faces:
         dlib_rect = dlib.rectangle(left=int(x), top=int(y), right=int(x+w), bottom=int(y+h))
         landmarks = predictor(image=cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY), box=dlib_rect)
@@ -41,8 +93,11 @@ def detect_lips_speaking(video_frame, faces):
         
         if prev_mar is not None and abs(mar - prev_mar) > 0.1:  # Threshold for detecting speaking
             cv2.polylines(video_frame, [lip_points[0:12]], isClosed=True, color=(0, 0, 255), thickness=2)
+            lips_moving.append((x, y, w, h))
         
         prev_mar = mar
+        
+        
 
 # Main loop
 while True:
@@ -50,7 +105,8 @@ while True:
     if not result:
         break
 
-    faces = detect_bounding_box(video_frame)
+    face_collection.update_faces(detect_bounding_box(video_frame))
+    faces.update(faces)
     detect_lips_speaking(video_frame, faces)
     cv2.imshow("My Face Detection Project", video_frame)
 
