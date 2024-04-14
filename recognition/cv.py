@@ -20,8 +20,7 @@ class FaceClassifier:
         dlib_rect = dlib.rectangle(left=int(x), top=int(y), right=int(x+w), bottom=int(y+h))
         landmarks = self.predictor(image=cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY), box=dlib_rect)
         lip_points = np.array([(landmarks.part(n).x, landmarks.part(n).y) for n in range(48, 68)])
-        cv2.polylines(video_frame, [lip_points[0:12]], isClosed=True, color=(0, 255, 0), thickness=2)
-
+        
         if logging.getLogger().isEnabledFor(logging.DEBUG):
             self._render_box(video_frame, coordinates)
             self._render_lips(video_frame, lip_points)
