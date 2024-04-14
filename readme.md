@@ -1,5 +1,11 @@
 # Real Time Transcription (VR)
-### RTT Development
+## Usage
+```zsh
+./run.sh
+or
+./run.sh debug # for debug environment
+```
+### Transcription Development
 #### Setup
 Add OpenAI API key to dotenv file
 ```zsh
@@ -31,13 +37,25 @@ If you find that you are speaking, but it is not consistently transcribing, the 
 Open two shells and run `rtt.py` and `dummy_server.py`
 
 ### Recognition Development
-regonition uses lip movement detector
-recog only uses MAR
-Neither really work that well
+#### Setup
+Create virtual env and install dependencies
+```zsh
+cd recognition
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+#### Usage
 ```zsh
 cd recognition
 source env/bin/activate # activate the python environment
-python3 recognition.py
-or
-python3 recog.py
+./rtt.py
 ```
+
+#### Tuning `recognition.py`
+`./recognition.py --help` to look at the arguments
+
+
+#### Testing `recognition.py` locally
+See [Usage](#usage)
