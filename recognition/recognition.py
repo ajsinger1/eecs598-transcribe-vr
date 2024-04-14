@@ -1,55 +1,71 @@
+#!/usr/bin/env python3
 import cv2
-import dlib
-import numpy as np
-from lip_movement_detector import LipMovementDetector
+import logging
+import sys
+import argparse
+from face_collection import FaceCollection
+from transcription_server import TranscriptionServer
 
-# Initialize the face detector and facial landmarks predictor
-face_detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+logger = logging.getLogger(__name__)
 
-# Initialize the video capture
-video_capture = cv2.VideoCapture(0)
+def initialize_logger(args):
+    """Initialize the logging module"""
+    try:
+        logging.basicConfig(level=args.log_level)
+    except ValueError:
+        logging.error("Invalid log level: %s", args.log_level)
+        sys.exit(1)
 
-# Initialize the lip movement detector
-lip_detector = LipMovementDetector(dynamic_threshold_factor=1, num_frames_to_analyze=3)
+def parse_args():
+    """Parse Arguments"""
+    parser = argparse.ArgumentParser()
+    # Logging args
+    parser.add_argument("--log-level", default="WARNING", help="Set log level. (default is WARNING)", type=str)
 
-while True:
-    # Capture frame-by-frame
-    ret, frame = video_capture.read()
-    if not ret:
-        break
-
-    # Convert the frame to grayscale for face detection
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # Networking args
+    parser.add_argument(
+        "-a",
+        "--address",
+        default="127.0.0.1",
+        help="Host address to listen on. (default is 127.0.0.1)",
+        type=str,
+    )
+    parser.add_argument(
+        "-p", "--port", default=9000, help="Port to listen on. (default is 9000)", type=int
+    )
     
-    # Detect faces in the grayscale frame
-    faces = face_detector(gray, 0)
+    # Recognition args
+    parser.add_argument(
+        "-m", "--mar-deque-length", default=10, help="length of MAR deque. (default is 10)", type=int
+    )
 
-    for face in faces:
-        # Get the landmarks/parts for the face in box
-        landmarks = predictor(gray, face)
-        
-        # Calculate the MAR for the detected face
-        mar = lip_detector.calculate_mar(landmarks)
-        
-        # Update the baseline MAR if needed and add the current MAR to the detector
-        lip_detector.update_baseline(mar)
-        lip_detector.add_mar_value(mar)
+    parser.add_argument(
+        "-t", "--talk-threshold", default=0.05, help="talk threshold (minimum average MAR to be considered \"talking\"). (default is 0.05)", type=float
+    )
 
-        # Determine if the person is talking
-        talking = lip_detector.is_talking(mar)
+    return parser.parse_args()
 
-        # Draw a rectangle around the face and indicate if talking
-        x, y, w, h = face.left(), face.top(), face.width(), face.height()
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.putText(frame, "Talking" if talking else "Not Talking", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0) if talking else (0, 0, 255), 2)
+def main(args):
+    video_capture = cv2.VideoCapture(0)
+    face_collection = FaceCollection(args.mar_deque_length, args.talk_threshold)
+    transcription_server = TranscriptionServer(args.address, args.port)
 
-    # Display the resulting frame
-    cv2.imshow('Frame', frame)
+    while True:
+        result, video_frame = video_capture.read()
+        if not result:
+            sys.exit(1)
+        face_collection.update(video_frame)
+        speaker = face_collection.get_speaker()
+        if speaker:
+            is_new_phrase, phrase = transcription_server.get_phrase()
+            cv2.putText(video_frame, phrase, (speaker.coordinates.x, speaker.coordinates.y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+       
+        cv2.imshow("My Face Detection Project", video_frame)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            sys.exit(0)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
 
-# When everything done, release the capture
-video_capture.release()
-cv2.destroyAllWindows()
+if __name__ == "__main__":
+    args_map = parse_args()
+    initialize_logger(args_map)
+    main(args_map)

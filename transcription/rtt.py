@@ -72,7 +72,7 @@ def main(args):
             print ("Could not connect. Will retry in 5 seconds...")
             sleep(5)
             continue
-        
+        print("Connected.")
         while True:
             data = b""
             while not transcription_queue.empty():
