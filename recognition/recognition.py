@@ -58,7 +58,7 @@ def main(args):
         speaker = face_collection.get_speaker()
         if speaker:
             is_new_phrase, phrase = transcription_server.get_phrase()
-            cv2.putText(video_frame, phrase, (speaker.coordinates.x, speaker.coordinates.y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            cv2.putText(video_frame, phrase[-50:], (speaker.coordinates.x, speaker.coordinates.y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
        
         cv2.imshow("My Face Detection Project", video_frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):
