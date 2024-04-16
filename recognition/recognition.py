@@ -58,7 +58,7 @@ def main(args):
         speaker = face_collection.get_speaker()
         if speaker:
             is_new_phrase, phrase = transcription_server.get_phrase()
-            cv2.putText(video_frame, phrase[-50:], (speaker.coordinates.x, speaker.coordinates.y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(video_frame, phrase[-40:], (speaker.coordinates.x, speaker.coordinates.y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
        
         cv2.imshow("My Face Detection Project", video_frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):
@@ -69,3 +69,14 @@ if __name__ == "__main__":
     args_map = parse_args()
     initialize_logger(args_map)
     main(args_map)
+
+# fix MAR and whos talking
+# words should be 'glued' to one persons face so that old text doesnt go to new face
+# user testing with a script (inside)
+    # qualifying effectiveness of tool
+    # how accurate is speech to text
+    # how correct are we with assignment
+# user test #2 (outside people)
+    # maybe get zoom input
+    # can we have an effective conversation
+    # paper due next friday
