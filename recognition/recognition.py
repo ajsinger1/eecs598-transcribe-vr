@@ -6,6 +6,7 @@ import argparse
 from face_collection import FaceCollection
 from transcription_server import TranscriptionServer
 
+
 logger = logging.getLogger(__name__)
 
 def initialize_logger(args):
@@ -36,7 +37,7 @@ def parse_args():
     
     # Recognition args
     parser.add_argument(
-        "-m", "--mar-deque-length", default=10, help="length of MAR deque. (default is 10)", type=int
+        "-m", "--mar-deque-length", default=25, help="length of MAR deque. (default is 10)", type=int
     )
 
     parser.add_argument(
@@ -50,15 +51,37 @@ def main(args):
     face_collection = FaceCollection(args.mar_deque_length, args.talk_threshold)
     transcription_server = TranscriptionServer(args.address, args.port)
 
+    old_phrase = ''
+    prev_speaker = None
     while True:
         result, video_frame = video_capture.read()
         if not result:
             sys.exit(1)
         face_collection.update(video_frame)
         speaker = face_collection.get_speaker()
-        if speaker:
+        if prev_speaker is None:
+            prev_speaker = speaker
+        if speaker and speaker.is_talking():
             is_new_phrase, phrase = transcription_server.get_phrase()
-            cv2.putText(video_frame, phrase[-40:], (speaker.coordinates.x, speaker.coordinates.y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            new_phrase = phrase
+            if speaker != prev_speaker and len(phrase) >= len(old_phrase):
+                print(f"{speaker.get_id()}: {phrase}")
+                diff = len(phrase) - len(old_phrase)
+                new_phrase = phrase[-diff:] if diff != 0 else ""
+                print(f"{speaker.get_id()}: {new_phrase}")
+            prev_speaker = speaker
+            speaker.set_words(new_phrase)
+            old_phrase = phrase
+            
+
+        
+        for face in face_collection.faces:
+            recently_spoken = face.get_words()
+            if len(recently_spoken) < 40:
+                cv2.putText(video_frame, f"{face.get_id()}: {recently_spoken}", (face.coordinates.x, face.coordinates.y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            else:
+                cv2.putText(video_frame, f"{face.get_id()}: {recently_spoken[-40:]}", (face.coordinates.x, face.coordinates.y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
        
         cv2.imshow("My Face Detection Project", video_frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):

@@ -16,8 +16,9 @@ class Coordinates:
 def mouth_aspect_ratio(mouth_points):
     A = np.linalg.norm(mouth_points[2] - mouth_points[10])  # Distance between 51 - 59
     B = np.linalg.norm(mouth_points[4] - mouth_points[8])   # Distance between 53 - 57
-    C = np.linalg.norm(mouth_points[0] - mouth_points[6])   # Distance between 49 - 55
-    mar = (A + B) / (2.0 * C)
+    # C = np.linalg.norm(mouth_points[0] - mouth_points[6])   # Distance between 49 - 55
+    # mar = (A + B) / (2.0 * C)
+    mar = A + B
     return mar
 
 def distance(point1: tuple, point2: tuple):

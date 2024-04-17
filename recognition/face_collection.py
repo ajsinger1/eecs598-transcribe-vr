@@ -3,13 +3,20 @@ from typing import List, Optional
 from utils import Coordinates, distance
 from cv import FaceClassifier
 
+face_id = 1
+
 class Face:
+    
     def __init__(self, coordinates: Coordinates, mar_deque_length: int, talk_threshold: float):
+        global face_id
+        self.id = face_id
+        face_id += 1
         self.coordinates: Coordinates = coordinates
         self.prev_mar: int = None
         self.diffs: deque = deque([0] * mar_deque_length)
         self.talk_score: float = 0
         self.scaled_talk_threshold = mar_deque_length * talk_threshold
+        self.words: str = ' '*40
 
     def update_coordinates(self, coordinates: Coordinates) -> None:
         self.coordinates = coordinates
@@ -26,6 +33,15 @@ class Face:
     
     def is_talking(self) -> bool:
         return self.talk_score > self.scaled_talk_threshold
+    
+    def set_words(self, phrase: str) -> None:
+        self.words = phrase
+
+    def get_words(self) -> str:
+        return self.words
+    
+    def get_id(self) -> int:
+        return self.id
 
 
 class FaceCollection:
