@@ -5,6 +5,7 @@ import sys
 import argparse
 from face_collection import FaceCollection
 from transcription_server import TranscriptionServer
+import time
 
 
 logger = logging.getLogger(__name__)
@@ -51,8 +52,10 @@ def main(args):
     face_collection = FaceCollection(args.mar_deque_length, args.talk_threshold)
     transcription_server = TranscriptionServer(args.address, args.port)
 
-    old_phrase = ''
     prev_speaker = None
+    time_set = time.time()
+    speaker_phrases = []
+    prev_phrase = None
     while True:
         result, video_frame = video_capture.read()
         if not result:
@@ -63,16 +66,21 @@ def main(args):
             prev_speaker = speaker
         if speaker and speaker.is_talking():
             is_new_phrase, phrase = transcription_server.get_phrase()
-            new_phrase = phrase
-            if speaker != prev_speaker and len(phrase) >= len(old_phrase):
-                print(f"{speaker.get_id()}: {phrase}")
-                diff = len(phrase) - len(old_phrase)
-                new_phrase = phrase[-diff:] if diff != 0 else ""
-                print(f"{speaker.get_id()}: {new_phrase}")
-            prev_speaker = speaker
-            speaker.set_words(new_phrase)
-            old_phrase = phrase
-            
+            # per phrase this gets reset
+            if is_new_phrase:
+                speaker_phrases = []
+            # new speaker
+            if speaker != prev_speaker:
+                prev_speaker = speaker
+                new_speaker_phrase = phrase.removeprefix(''.join(speaker_phrases)) if phrase.removeprefix(''.join(speaker_phrases)) != phrase else phrase[sum([len(x) for x in speaker_phrases]):]
+                speaker_phrases.append(new_speaker_phrase)
+            elif len(speaker_phrases) > 0: # ["Hello my name is Ari", "and my name is Joey", "and my name is tony"]
+                # "Hello my name is Ari and my name is Joey and my name is tony"
+                speaker_phrase = phrase.removeprefix(''.join(speaker_phrases[:-1])) if phrase.removeprefix(''.join(speaker_phrases[:-1])) != phrase else phrase[sum([len(x) for x in speaker_phrases[:-1]]):]
+                speaker_phrases[-1] = speaker_phrase
+            else:
+                speaker_phrases.append(phrase)
+            speaker.set_words(speaker_phrases[-1])
 
         
         for face in face_collection.faces:

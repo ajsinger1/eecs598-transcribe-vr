@@ -4,9 +4,12 @@ import threading
 from time import sleep
 import logging
 
+from deep_translator import GoogleTranslator
+
 class TranscriptionServer(socketserver.TCPServer):
     class TranscriptionHandler(socketserver.StreamRequestHandler):
         def handle(self) -> None:
+            # translator = GoogleTranslator(source='auto', target='en')
             if logging.getLogger().isEnabledFor(logging.DEBUG):
                 print(f"Connected to {self.client_address}")
             while True:
@@ -29,6 +32,10 @@ class TranscriptionServer(socketserver.TCPServer):
                     phrase += self.request.recv(size - len(phrase)).decode()
                 
                 self.server.is_new_phrase = new_phrase
+
+                # translate
+                # translated = translator.translate(phrase)
+
                 self.server.phrase = phrase
                 sleep(0.1)
 
@@ -42,4 +49,5 @@ class TranscriptionServer(socketserver.TCPServer):
         is_new_phrase = self.is_new_phrase
         self.is_new_phrase = False
         return is_new_phrase, self.phrase
+    
     
