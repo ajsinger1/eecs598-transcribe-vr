@@ -1,5 +1,12 @@
-# Real Time Transcription (VR)
-## Usage
+# Real Time Transcription (RTT)
+## Introduction
+EECS 598-004: Engineering Interactive Systems
+
+Joey Adelman, Ari Singer, Eli Kersey, Tony Tang
+
+[GitHub Repository](https://github.com/ajsinger1/eecs598-transcribe-vr/tree/main),
+[Google Drive](https://drive.google.com/drive/folders/1LDlZhp_NxBIH4CJbSE7JRaHhYnTv6LAK?usp=share_link)
+## Usage (make sure to [add OpenAI key](#setup))
 ```zsh
 ./run.sh
 or
